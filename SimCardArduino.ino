@@ -2,21 +2,18 @@
 #define IO 4
 #define Rst 5
 #define Vcc 6
-unsigned long maxWait = 372000;
 unsigned long nextBitTime;
 unsigned long endTime;
 unsigned long start = 0;
-unsigned long wwt = 0;
-unsigned long maxwwt = 0;
-unsigned int data = 0;
+byte T0 = 0;
 int etu = 93;
 int guardTime = 186;
-boolean startbitFound = 0;
 void setup() {
   Serial.begin(9600);
   pinMode(Clk, OUTPUT);
   pinMode(Rst, OUTPUT);
   pinMode(Vcc, OUTPUT);
+  pinMode(12, OUTPUT);
   pinMode(IO, INPUT);
   digitalWrite(Rst, HIGH);
   digitalWrite(Vcc, LOW);
@@ -45,31 +42,40 @@ void setup() {
   // falling edge of second bit
   while (digitalRead(IO) == HIGH) {}
   // rising edge of second bit
-  while (digitalRead(IO) == LOW) {start = micros();}
+  while (digitalRead(IO) == LOW) {
+    start = micros();
+  }
   // falling edge of third bit
-do  { etu = ((micros() - start) / 3)+2;}
-while (digitalRead(IO) == HIGH);
-  Serial.println("4. Calc Etu");
+  do  {
+    etu = ((micros() - start) / 3) + 2;
+  }
+  while (digitalRead(IO) == HIGH);
+  Serial.println("4. Calculate Etu");
   Serial.print("etu:    ");
   Serial.println(etu);
   guardTime = etu * 2;
-  //wwt = 1920 * etu;
-  //maxwwt = wwt + 480 * etu;
+  Serial.println("5. Calculate Guardtime");
+  Serial.print("guardTime: ");
+  Serial.println(guardTime);
   delay(10);
-   nextBitTime = micros() + etu + etu / 2;
-  endTime = micros() + maxWait;
-  for (int bit = 8; bit = 0; bit--) {
-    while (micros() < nextBitTime) {
-      if (digitalRead(IO) == 1) {
-        bitSet(data, 0);
-
-      }
-    }
-    nextBitTime = micros() + etu;
-    data = data << 1;
-
+  while (digitalRead(IO) == HIGH) {
+    nextBitTime = micros() + (etu / 2);
   }
-  Serial.println(data, BIN);
+
+  for (int i = 0; i < 8; i++) {
+    while (micros() < nextBitTime) {}
+    T0 = T0 << 1;
+    if (digitalRead(IO) == 1) {
+      bitSet(T0,0);
+    }
+
+    nextBitTime = nextBitTime + etu;
+  }
+
+ Serial.println("T0: ");
+ Serial.print(T0,HEX);
+
 }
 void loop() {
 }
+
