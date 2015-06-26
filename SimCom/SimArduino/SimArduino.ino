@@ -13,10 +13,12 @@ TCCR2A = B00100011;
 TCCR2B = B00001001;
 OCR2A = 3;
 OCR2B = 1;
-Serial.println("Startup finished");
+Serial.println("Startup finished by Sim");
 SPCR = (1<<SPE);
 do{SPDR = B10000000;
 while(!(SPSR & (1<<SPIF)));
 
 } while (SPDR != B01000000);
 }
+SPDR = B10000000;
+
