@@ -1,28 +1,28 @@
-#define Vcc 2
-#define Clk 3
-#define IO 4
-#define Rst 5
+byte clr;
+
 void setup() {
   Serial.begin(9600);
-  pinMode(Clk, OUTPUT);
-  pinMode(Rst, OUTPUT);
-  pinMode(IO, INPUT);
-  pinMode(SCK, INPUT);
-  pinMode(MOSI, INPUT);
-  pinMode(MISO, OUTPUT);
-  TCCR2A = B00100011;
-  TCCR2B = B00001001;
-  OCR2A = 3;
-  OCR2B = 1;
-  Serial.println("Startup finished by Sim");
+  pinMode(SS , INPUT);
+  pinMode(SCK , INPUT);
+  digitalWrite(MISO,LOW);
+  pinMode(MISO , OUTPUT);
+  pinMode(MOSI , INPUT);
+  
+  //clear SPI registers
+  SPCR = B00000000;
+  SPDR = B01011101;
+  SPCR = B01000100;
+  
+  //Set Start Byte
+ 
+  Serial.println("Startup finished   by SIM");
+   Serial.println("Waiting for 3G   by SIM");
+ 
+
 }
+
 void loop() {
-  SPDR = B01000000;
-  SPCR = B01010000;
-  //Wait for first data transmition
-  while (!(SPSR & (1 << SPIF))){};
-  if (SPDR == B10000000) {
-    Serial.println("Connection established by Sim");
-  }
+  
+
 }
 
