@@ -17,9 +17,11 @@ void setup() {
 
 void loop() {
   //Set SPI data register available bit
+  
   SPDR = B10000000;
+  SPCR = B01000000;
   //Wait for first data transmition
-  while (!(SPSR & (1 << SPIF)));
+  while (!(SPSR & (1 << SPIF))){};
   if (SPDR == B01000000) {
     Serial.println("Connection established by 3G");
   }

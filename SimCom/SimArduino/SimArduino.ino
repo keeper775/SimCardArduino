@@ -17,10 +17,10 @@ void setup() {
   Serial.println("Startup finished by Sim");
 }
 void loop() {
-  SPCR = (1 << SPE);
   SPDR = B01000000;
+  SPCR = B01010000;
   //Wait for first data transmition
-  while (!(SPSR & (1 << SPIF)));
+  while (!(SPSR & (1 << SPIF))){};
   if (SPDR == B10000000) {
     Serial.println("Connection established by Sim");
   }
