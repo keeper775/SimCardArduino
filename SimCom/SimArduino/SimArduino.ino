@@ -1,3 +1,4 @@
+byte clr;
 byte dat;
 
 byte spi_recieve()
@@ -9,31 +10,27 @@ byte spi_recieve()
 }
 
 void setup() {
+ SPCR = B00000000;
+  SPDR = B11110000;
   Serial.begin(9600);
   pinMode(SS , INPUT);
   pinMode(SCK , INPUT);
-  digitalWrite(MISO,LOW);
   pinMode(MISO , OUTPUT);
   pinMode(MOSI , INPUT);
   
   //clear SPI registers
-  SPCR = B00000000;
-  SPDR = B01011101;
+  
   SPCR = B01000100;
   
   //Set Start Byte
  
   Serial.println("Startup finished   by SIM");
    Serial.println("Waiting for 3G   by SIM");
- while(B10000000!=spi_recieve()){}
 
 }
 
 void loop() {
 dat=spi_recieve();
-if(dat&B000000001==B00000001)
-{}
-
-
+Serial.println(dat,BIN);
 }
 

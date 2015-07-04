@@ -11,37 +11,26 @@ byte spi_transfer(byte data)
 }
 
 void setup() {
-  Serial.begin(9600);
-  digitalWrite(MOSI, LOW);
-  digitalWrite(6 , HIGH);
   
+  SPCR = B00000000;
+  SPDR = B00000000;
+  Serial.begin(9600);
   pinMode(MISO , INPUT);
- 
   pinMode(SS , OUTPUT);
-  pinMode(6 , OUTPUT);
-
-
   SPCR = B01010100;
-  //clear SPI registers
-  //Set Start Byte
+
   pinMode(MOSI , OUTPUT);
   pinMode(SCK , OUTPUT);
-  //Set as Master
   Serial.println("Startup finished   by 3G");
-  digitalWrite(6, LOW);
   Serial.println("Waiting for SIM   by 3G");
-  delay(10000);
+  
   dat = spi_transfer(B10000000);
-
   Serial.println(dat, BIN);
-  dat = spi_transfer(B10000000);
-
+  dat = spi_transfer(B01000000);
   Serial.println(dat, BIN);
-  dat = spi_transfer(B10000000);
-
+  dat = spi_transfer(B00100000);
   Serial.println(dat, BIN);
-  dat = spi_transfer(B10000000);
-
+  dat = spi_transfer(B00010000);
   Serial.println(dat, BIN);
 }
 
