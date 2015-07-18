@@ -1,40 +1,34 @@
 byte clr;
 byte dat;
 
-byte spi_transfer(byte data)
-{
-  SPDR = data;                    // Start the transmission
-  while (!(SPSR & (1 << SPIF)))   // Wait the end of the transmission
-  {
-  };
-  return SPDR;                    // return the received byte
+#define SCK_PIN   13
+#define MISO_PIN  12
+#define MOSI_PIN  11
+#define SS_PIN    10
+
+
+byte spi_wr(byte data) {
+  SPDR = data;
+  while (!(SPSR & (1 << SPIF))) ;
+  return SPDR;
 }
-
 void setup() {
-  
+  pinMode(SCK_PIN, OUTPUT);
+  pinMode(MOSI_PIN, OUTPUT);
+  pinMode(MISO_PIN, INPUT);
+  pinMode(SS_PIN, OUTPUT);
   SPCR = B00000000;
-  SPDR = B00000000;
+  SPCR = (1 << SPE) | (1 << MSTR);
   Serial.begin(9600);
-  pinMode(MISO , INPUT);
-  pinMode(SS , OUTPUT);
-  SPCR = B01010100;
-
-  pinMode(MOSI , OUTPUT);
-  pinMode(SCK , OUTPUT);
+  digitalWrite(5, HIGH);
+  pinMode(5, OUTPUT);
   Serial.println("Startup finished   by 3G");
-  Serial.println("Waiting for SIM   by 3G");
+  digitalWrite(5, LOW);
   
-  dat = spi_transfer(B10000000);
-  Serial.println(dat, BIN);
-  dat = spi_transfer(B01000000);
-  Serial.println(dat, BIN);
-  dat = spi_transfer(B00100000);
-  Serial.println(dat, BIN);
-  dat = spi_transfer(B00010000);
-  Serial.println(dat, BIN);
 }
 
 void loop() {
-
+  Serial.println(spi_wr(B00000000));
+  delay(1000);
 }
 
