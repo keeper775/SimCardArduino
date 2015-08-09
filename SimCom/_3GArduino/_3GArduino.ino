@@ -1,34 +1,43 @@
-byte clr;
-byte dat;
-
-#define SCK_PIN   13
-#define MISO_PIN  12
-#define MOSI_PIN  11
-#define SS_PIN    10
-
-
 byte spi_wr(byte data) {
   SPDR = data;
-  while (!(SPSR & (1 << SPIF))) ;
+  while (!(SPSR & (1 << SPIF))) {}; //Wait for Arduino to finish transmition
   return SPDR;
 }
 void setup() {
-  pinMode(SCK_PIN, OUTPUT);
-  pinMode(MOSI_PIN, OUTPUT);
-  pinMode(MISO_PIN, INPUT);
-  pinMode(SS_PIN, OUTPUT);
+  cli();                           //Disable Global Interrupts
+  PORTD =  PORTD | B00000000;
+  //  7-0 Output: HIGH/LOW    INPUT:
+  //  D7   D6   D5   D4   D3   D2   D1   D0
+  //  XX   XX   XX   I/O  Clk  Rst  TXD  RXD
+  //  
+
+  PORTB = PORTB | B00000100;
+  //  13-8 OUTPUT: HIGH/LOW   INPUT:
+  //  XX   XX   D13  D12  D11  D10  D9   D8
+  //  XX   XX   SCK  MISO MOSI SS   XX   XX
+  //                           1
+
+  DDRD = DDRD | B00000000;
+  //  7-0 OUTPUT/INPUT
+  //  D7   D6   D5   D4   D3   D2   D1   D0
+  //  XX   XX   XX   I/O  Clk  Rst  TXD  RXD
+  //                      
+
+  DDRB = DDRB | B00101100;
+  //  13-8 OUTPUT/INPUT
+  //  XX   XX   D13  D12  D11  D10  D9   D8
+  //  XX   XX   SCK  MISO MOSI SS   XX   XX
+  //            1         1    1
   SPCR = B00000000;
+  //Reset SPI Controll Register
   SPCR = (1 << SPE) | (1 << MSTR);
-  Serial.begin(9600);
-  digitalWrite(5, HIGH);
-  pinMode(5, OUTPUT);
-  Serial.println("Startup finished   by 3G");
-  digitalWrite(5, LOW);
-  
+  //Set SPI Settings: SPiEnabeled , MaSTeR
 }
 
 void loop() {
-  Serial.println(spi_wr(B00000000));
-  delay(1000);
+
+  spi_wr(2);
+
 }
+
 
